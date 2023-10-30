@@ -53,44 +53,9 @@ export class HomeComponent implements AfterViewInit {
       },
     },
   };
-  pay(): void {
-    // if (this.paymentForm.valid) {
-      this.createPaymentIntent(this.selectedPackage.net_price ? this.selectedPackage.net_price : this.selectedPackage.price)
-        .pipe(
-          switchMap((pi:any) =>
-            this.stripeService.confirmCardPayment(pi.client_secret, {
-              payment_method: {
-                card: this.card.element,
-                billing_details: {
-                  name: this.form3.get('registerFirstName').value,
-                },
-              },
-            })
-          )
-        )
-        .subscribe((result) => {
-          if (result.error) {
-            // Show error to your customer (e.g., insufficient funds)
-            console.log(result.error.message);
-          } else {
-            // The payment has been processed!
-            if (result.paymentIntent.status === 'succeeded') {
-              // Show a success message to your customer
-            }
-          }
-        });
-    // } else {
-    //   console.log(this.paymentForm);
-    // }
-  }
+ 
 
-  createPaymentIntent(amount: number): Observable<PaymentIntent> {
-    return this.http.post<PaymentIntent>(
-      `pk_test_51O5YCYFsXQwPd2tbJm8xT224tG7OoCXWGyigDqVGZ2DeNsiWxhSDfJNiBbfq508cDU15nQOctVTijlbUcJvVqleO00OTWN3YAb/create-payment-intent`,
-      { amount }
-    );
-  }
-
+  
   
 packages: any[] = [];
   slides1: any[] = []; 
@@ -109,7 +74,7 @@ packages: any[] = [];
   submitButtonClicked = false;
   form3:FormGroup
   selectedPackage: any=null;
-
+  cardsSearched:any=[]
 
   selectPackage(selectedPackage: any) {
     this.selectedPackage = selectedPackage;
@@ -118,10 +83,10 @@ packages: any[] = [];
  
 
   closeModal(){
-    // const modal = document.getElementById('exampleModalCenter');
-    //   this.renderer.removeClass(modal, 'show');
+    
 
   }
+
    emailMatchValidator = (control: AbstractControl): { [key: string]: boolean } | null => {
     const email = control.get('registerEmail');
     const confirmEmail = control.get('registerConfirmEmail');
@@ -198,6 +163,20 @@ packages: any[] = [];
       }
     }
   }
+  searchCards(){
+    const business_type = this.form2.get('selectedBusinessType').value;
+    const age_type = this.form2.get('selectedAgeType').value;
+    const sports_type = this.form2.get('selectedSportType').value;
+    const position = this.form2.get('selectedPositionType').value;
+    const state = this.form2.get('selectedStateType').value;
+    this.apiService.searchCard(business_type,age_type,sports_type,position,state).subscribe(
+      (response)=>{
+        this.cardsSearched=response.Cards
+        console.log(response);
+      }
+    )
+  }
+
   register() {
     const firstName = this.form3.get('registerFirstName');
     const lastName = this.form3.get('registerLastName');
@@ -262,7 +241,11 @@ packages: any[] = [];
 
   constructor(private apiService: ApiService,private fb: FormBuilder,private renderer: Renderer2, private http: HttpClient,
     private stripeService: StripeService) {
-
+      this.getBusniessType()
+    
+      this.getAgeType()
+      this.getSportType()
+  
 
 
       // form is login form 
@@ -275,11 +258,11 @@ packages: any[] = [];
     });
 
     this.form2 = this.fb.group({
-      selectedBusinessType: [''],
-      selectedAgeType: [''],
-      selectedSportType: [''],
-      selectedPositionType: [''],
-      selectedStateType: [''],
+      selectedBusinessType:['', Validators.required],
+      selectedAgeType: ['', Validators.required],
+      selectedSportType: ['', Validators.required],
+      selectedPositionType:['', Validators.required],
+      selectedStateType: ['', Validators.required],
     });
     this.form3 = this.fb.group({
       registerFirstName: ['', Validators.required],
@@ -299,17 +282,8 @@ packages: any[] = [];
     }, { validators: this.emailMatchValidator })
 
 
-    this.getBusniessType()
     
-    this.getAgeType()
-    this.getSportType()
-    this.form2.patchValue({
-      selectedBusinessType: 'Select Business Type',
-      selectedAgeType: 'Select Age Type',
-      selectedSportType: 'Select Sport Type',
-      selectedPositionType: 'Select Position Type',
-      selectedStateType: 'Select State Type',
-    });
+    
     
     
   
@@ -322,6 +296,7 @@ packages: any[] = [];
         console.error('Error fetching users:', error);
       }
     );
+
     this.slideConfig1 = {
       dots: false,
       infinite: true,
@@ -409,9 +384,12 @@ this.slides2 = [
   searchSports() {
     const formData = this.form2.value;
     
+    
 
   
   }
+
+
 
 
   FUNDING_SOURCES = [
@@ -426,6 +404,8 @@ this.slides2 = [
   }
   
   ngAfterViewInit() {
+    
+
     console.log("register counry value",this.form3.get('registerCountry')?.value)
     const containerId = `paypal-button-container`;
 
@@ -438,7 +418,7 @@ this.slides2 = [
               {
                 amount: {
                   currency_code: 'USD',
-                  value: this.selectedPackage.net_price ?  this.selectedPackage.net_price : this.selectedPackage.price,
+                  value: this.selectedPackage?.net_price ?  this.selectedPackage?.net_price : this.selectedPackage?.price,
                 },
               },
             ],

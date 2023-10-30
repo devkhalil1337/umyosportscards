@@ -319,7 +319,9 @@
                     aria-label="Default select example"
                     formControlName="selectedBusinessType"
                   >
-                    <option selected>Select Business Type</option>
+                    <option selected value="" disabled>
+                      Select Business Type
+                    </option>
                     <option
                       [value]="type.business_type"
                       *ngFor="let type of businessType"
@@ -334,7 +336,7 @@
                     aria-label="Default select example"
                     formControlName="selectedAgeType"
                   >
-                    <option selected>Select Age Type</option>
+                    <option selected value="" disabled>Select Age Type</option>
                     <option [value]="type.name" *ngFor="let type of ageType">
                       {{ type.name }}
                     </option>
@@ -347,7 +349,9 @@
                     formControlName="selectedSportType"
                     (change)="onSportTypeChange()"
                   >
-                    <option selected>Select Sport Type</option>
+                    <option selected value="" disabled>
+                      Select Sport Type
+                    </option>
                     <option [value]="type.name" *ngFor="let type of sportType">
                       {{ type.name }}
                     </option>
@@ -359,7 +363,9 @@
                     aria-label="Default select example"
                     formControlName="selectedPositionType"
                   >
-                    <option selected>Select Position Type</option>
+                    <option selected value="" disabled>
+                      Select Position Type
+                    </option>
                     <option
                       [value]="type.name"
                       *ngFor="let type of positionType"
@@ -374,7 +380,9 @@
                     aria-label="Default select example"
                     formControlName="selectedStateType"
                   >
-                    <option selected>Select State Type</option>
+                    <option selected value="" disabled>
+                      Select State Type
+                    </option>
                     <option value="Alabama">Alabama</option>
                     <option value="Alaska">Alaska</option>
                     <option value="Arizona">Arizona</option>
@@ -432,15 +440,24 @@
                   <button
                     type="submit"
                     class="btn btn-info text-white py-2 px-5 w-100"
+                    (click)="searchCards()"
+                    [disabled]="!form2.valid"
                   >
                     Search
                   </button>
                 </div>
               </div>
             </form>
-            <p class="bg-info rounded mb-4 text-white py-2 px-3 my-5">
-              Result response here
-            </p>
+            <div class="bg-info rounded text-white py-2 px-3 my-5">
+              <p class="text-white mb-4">Cards Found:</p>
+              <p
+                class="text-white mb-4"
+                style="cursor: pointer"
+                *ngFor="let card of cardsSearched"
+              >
+                {{ card.cardTitle }}
+              </p>
+            </div>
 
             <h2 class="text-white mb-4 text-uppercase">
               Make Cool sports cards
@@ -1325,7 +1342,7 @@
                     <h5 class="card-title" style="color: rgb(35, 149, 243)">
                       $
                       {{
-                        package.net_price ? package.net_price : package.price
+                        package?.net_price ? package?.net_price : package?.price
                       }}
                       <sup
                         style="
@@ -1338,16 +1355,16 @@
                         >{{ package.price }}</sup
                       >
                     </h5>
-                    <p class="card-text">Cards Limit: {{ package.limit }}</p>
+                    <p class="card-text">Cards Limit: {{ package?.limit }}</p>
                     <p class="card-duration">
-                      Duration: {{ package.expire_in }}
+                      Duration: {{ package?.expire_in }}
                     </p>
 
                     <div
                       class="description-container"
                       style="max-height: 100px; overflow-y: auto"
                     >
-                      <p class="card-description">{{ package.description }}</p>
+                      <p class="card-description">{{ package?.description }}</p>
                     </div>
                   </div>
                 </div>
@@ -1419,9 +1436,9 @@
             <h3>
               Amount
               {{
-                selectedPackage.net_price
-                  ? selectedPackage.net_price
-                  : selectedPackage.price
+                selectedPackage?.net_price
+                  ? selectedPackage?.net_price
+                  : selectedPackage?.price
               }}
             </h3>
 
@@ -1452,7 +1469,7 @@
               </div>
             </div>
 
-            <button type="submit" (click)="pay()">Submit Payment</button>
+            <button type="submit">Submit Payment</button>
           </form>
         </div>
 

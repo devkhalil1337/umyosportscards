@@ -245,6 +245,23 @@ getPositionType(category_id: any): Observable<any> {
 
 
 }
+searchCard(busniess_type:any,age_type:any,sports_type:any,position:any,state:any): Observable<any> {
+  const url = `https://umyosportscards.com/api_umyocards/public/api/get-search-card-by-dropdown`;
+  const headers = new HttpHeaders({
+    'Content-Type': 'application/json',
+    'Authorization': 'Bearer your-auth-token', 
+  });
+
+  
+
+  const combinedHeaders = headers
+    .append('Origin', this.customHeaders.get('Origin') || '')
+    .append('Referer', this.customHeaders.get('Referer') || '');
+  
+  return this.http.post(url, {"business_type":busniess_type,"age_type":age_type,"sport_type":sports_type,"position":position,"state":state}, { headers: combinedHeaders });
+
+
+}
 getBusinessType(): Observable<any> {
   const url = `https://umyosportscards.com/api_umyocards/public/api/all-categories`;
   const headers = new HttpHeaders({
